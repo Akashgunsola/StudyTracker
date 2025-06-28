@@ -2,6 +2,8 @@
 import User from "../models/user_model.js"
 import crypto from "crypto"
 import nodemailer from "nodemailer"
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 //register controller
 const register = async(req,res) => {
@@ -115,4 +117,113 @@ const verifyUser = async(req, res) =>{
     
  }
 
-export { register, verifyUser};
+const login = async(req, res) =>{
+    
+    const {email, password} = req.body;
+    if(!email || !password){
+        return res.status(400).json({
+            message:"Please Enter a Valid Email/Password to Login"
+        })
+    }
+
+    try {  
+    //check if email exists in db;
+    const user = await User.findOne({email});
+    console.log("User found1")
+    //ifnot
+        if(!user){
+        return res.status(400).json({
+            message: "Inavalid Email or Password"
+        });
+    }
+    //check if password matches with saved password in db using bcrypt
+const isMatch = await bcrypt.compare(password, user.password);
+        console.log("User found2")
+
+    //ifnot
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid Email or Password" });
+    }
+    
+    if (!user.isVerified) {
+      return res.status(403).json({ message: "Please verify your email first" });
+    }
+    
+    //jwt for user authentication
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "24h",
+    });
+        console.log("User found3")
+
+    //access users cookie using cookie parser
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",   // prevent CSRF (or use "lax")
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+});
+    console.log("User found4")
+
+
+ return res.status(200).json({
+      message: "Login successful",
+      success:true,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+const logout = async(req,res) =>{
+try {
+    res.cookie("token", " ", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      expires: new Date(0),
+    });
+
+    res.status(200).json({
+        status: true,
+        message:"Logged out successfully",
+    })
+    
+} catch (error) {
+    res.status(500).json({ status: false, message: "Logout failed" });
+}
+}
+
+const getme = async(req,res) => {
+try {
+    const user = await User.findById(req.user.id)
+
+    if(!user){
+       return res.status(400).json({
+        status: false,
+        message: "User not found"
+       })
+
+    }
+
+    res.status(200).json({
+        status:true,
+        user
+    })
+
+} catch (error) {
+            return res.status(401).json({
+            success: false,
+            message: "Error"
+        });
+}
+}
+
+export { register, verifyUser, login, getme, logout};
