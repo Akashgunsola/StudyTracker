@@ -2,6 +2,7 @@ import express, { urlencoded } from "express";
 import cors from "cors";
 import userRoutes from "./routes/user_route.js"
 import cookieParser from "cookie-parser";
+import subjectRoutes from "./routes/subject_route.js"
 
 const app = express();
 app.use(express.json());
@@ -13,5 +14,6 @@ app.use(cors({
 }))
 app.use(cookieParser());
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/subject', subjectRoutes)
 
 export default app;

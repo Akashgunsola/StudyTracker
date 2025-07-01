@@ -48,6 +48,25 @@ const createSubject = async (req, res) => {
     
 }
 
+const updateSubject = async (req, res) => {
+  try {
+    const { title, color } = req.body;
+
+    const updated = await Subject.findOneAndUpdate(
+      { _id: req.params.id, user_id: req.user.id },
+      { title, color },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    res.json({ success: true, updated });
+  } catch (error) {
+    res.status(500).json({ message: "Update failed" });
+  }
+};
 
 
-export {createSubject};
+export {createSubject, updateSubject};
