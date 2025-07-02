@@ -129,7 +129,7 @@ const login = async(req, res) =>{
     try {  
     //check if email exists in db;
     const user = await User.findOne({email});
-    console.log("User found1")
+    
     //ifnot
         if(!user){
         return res.status(400).json({
@@ -138,7 +138,7 @@ const login = async(req, res) =>{
     }
     //check if password matches with saved password in db using bcrypt
 const isMatch = await bcrypt.compare(password, user.password);
-        console.log("User found2")
+       
 
     //ifnot
     if (!isMatch) {
@@ -153,7 +153,7 @@ const isMatch = await bcrypt.compare(password, user.password);
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "24h",
     });
-        console.log("User found3")
+   
 
     //access users cookie using cookie parser
     res.cookie("token", token, {
@@ -162,7 +162,7 @@ const isMatch = await bcrypt.compare(password, user.password);
         sameSite: "strict",   // prevent CSRF (or use "lax")
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 });
-    console.log("User found4")
+   
 
 
  return res.status(200).json({

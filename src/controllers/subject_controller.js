@@ -1,5 +1,6 @@
 import Subject from "../models/subject_model.js";
 
+
 const createSubject = async (req, res) => {
     // *create a new subject for a logged in user algo below*
     //make a subject with req.body
@@ -47,7 +48,34 @@ const createSubject = async (req, res) => {
     }
     
 }
+const getallSubject = async(req, res) => {console.log("yeah");
 
+    try {
+    const userSubs = await Subject.find({
+        user_id: req.user.id
+    }).sort({createdAt: -1});
+    res.json({success: true, userSubs});
+
+    } catch (error) {
+        res.status(500).json(
+            { message: "Failed to fetch subjects" }
+        )
+    }
+
+}
+const getSubjectById = async (req, res) => {
+  try {
+    const subject = await Subject.findOne({ _id: req.params.id, user_id: req.user.id });
+
+    if (!subject) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    res.json({ success: true, subject });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching subject" });
+  }
+};
 const updateSubject = async (req, res) => {
   try {
     const { title, color } = req.body;
@@ -67,6 +95,23 @@ const updateSubject = async (req, res) => {
     res.status(500).json({ message: "Update failed" });
   }
 };
+const deleteSubject = async (req, res) => {
+  try {
+    const deleted = await Subject.findOneAndDelete({
+      _id: req.params.id,
+      user_id: req.user.id,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Subject not found" });
+    }
+
+    res.json({ success: true, message: "Subject deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Delete failed" });
+  }
+};
 
 
-export {createSubject, updateSubject};
+
+export {createSubject, updateSubject, getallSubject, getSubjectById, deleteSubject};
