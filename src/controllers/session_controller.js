@@ -2,7 +2,7 @@ import Session from "../models/session_model.js";
 
 import { updateStreakAfterSession } from "./streak_controller.js";
 
-// 📌 Create a study session & update streak
+// Create a study session & update streak
 export const createSession = async (req, res) => {
   try {
     const { duration, subject_id, topic_id } = req.body;
@@ -26,7 +26,7 @@ export const createSession = async (req, res) => {
   }
 };
 
-// 📌 Get all sessions of the user
+// Get all sessions of the user
 export const getUserSessions = async (req, res) => {
   try {
     const sessions = await Session.find({ user_id: req.user.id }).sort({ createdAt: -1 });
@@ -36,7 +36,7 @@ export const getUserSessions = async (req, res) => {
   }
 };
 
-// 📌 Delete a specific session
+// Delete a specific session
 export const deleteSession = async (req, res) => {
   try {
     await Session.findOneAndDelete({ _id: req.params.id, user_id: req.user.id });

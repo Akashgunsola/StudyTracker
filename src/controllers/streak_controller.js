@@ -1,6 +1,6 @@
 import Streak from "../models/streak_model.js";
 
-// 📌 Get logged-in user's streak
+//  Get logged-in user's streak
 export const getStreak = async (req, res) => {
   try {
     const streak = await Streak.findOne({ user_id: req.user.id });
@@ -10,7 +10,7 @@ export const getStreak = async (req, res) => {
   }
 };
 
-// 📌 Update streak logic after a session is created
+//  Update streak logic after a session is created
 export const updateStreakAfterSession = async (userId) => {
   const today = new Date().toDateString();
   let streak = await Streak.findOne({ user_id: userId });
