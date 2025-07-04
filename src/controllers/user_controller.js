@@ -226,4 +226,29 @@ try {
 }
 }
 
+const forgotpassword = async (req, res) => {
+    
+}
+
+const resetpassword = async(req, res) =>{
+    const {email} = req.body;
+    if(!email){
+        res.status(400).json({
+            message: "Enter a valid email",
+        });
+    }
+    try {
+    const user = await User.findOne({email});
+    
+
+
+} catch (error) {
+        
+    }
+}
+
+const resendVerficationemail = async (req, res) => {
+    
+}
+
 export { register, verifyUser, login, getme, logout};
