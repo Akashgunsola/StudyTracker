@@ -26,26 +26,34 @@ const register = async(req,res) => {
         
     }    
     //check if the user is already exists
+   
     try {
+        console.log("1");
        const existinguser = await User.findOne({email})
+         
+console.log("2");
        if(existinguser){
             return res.status(400).json({
                 message: "User already exist"
                 
             })
         }
+
+
 //create a new user
+console.log("3");
        const user = await User.create({
             username,
             email,
             password
         })
+        console.log("4");
         if(!user){
             res.status(400).json({
                 message: "user not registered"
             })
         }
-    
+    console.log("5");
     
     //generate verification token
 const verificationToken = crypto.randomBytes(32).toString("hex");
@@ -61,7 +69,7 @@ await user.save();
         to: user.email,
         subject: "Please Verify your email",
         text: `Please click on this link or paste it in your browser if unable to click to verify your email:
-         ${process.env.BASE_URL}/api/v1/users/verify/${verificationToken}` , // plain‑text body
+         http://localhost:5173/verify/${verificationToken}` , // plain‑text body
         // html: "<b>Hello world?</b>", // HTML body
     }
     const transporter = nodemailer.createTransport({
@@ -83,8 +91,12 @@ res.status(201).json({
 })
 
 }
+    
+
 catch (error) {
+    console.error("User creation error:", error);
     res.status(400).json({
+        
     message: "User not registered ",
     error,
     success: false,
@@ -158,8 +170,8 @@ const isMatch = await bcrypt.compare(password, user.password);
     //access users cookie using cookie parser
     res.cookie("token", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "strict",   // prevent CSRF (or use "lax")
+        secure: false,
+        sameSite: "Lax",   // prevent CSRF (or use "lax")
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 });
    
@@ -173,6 +185,7 @@ const isMatch = await bcrypt.compare(password, user.password);
         username: user.username,
         email: user.email,
         role: user.role,
+        token,
       },
     });
 

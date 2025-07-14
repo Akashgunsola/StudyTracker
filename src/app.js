@@ -11,7 +11,8 @@ const app = express();
 app.use(express.json());
 app.use(urlencoded({extended:true}))
 app.use(cors({
-    origin: process.env.BASE_URL,
+    origin: "http://localhost:5173", // or "*" for all origins (not recommended for production)
+    credentials: true,
     methods: ['GET','POST', 'DELETE','PUT'],
     allowedHeaders: ['Content-type', 'Authorization']
 }))

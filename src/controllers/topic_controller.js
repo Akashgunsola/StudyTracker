@@ -18,8 +18,8 @@ const createTopic = async (req, res) => {
 // Get all topics for a subject
 const getTopicsBySubject = async (req, res) => {
   try {
-    const { subjectId } = req.params;
-    const topics = await Topic.find({ subject_id: subjectId });
+    const { subject_id } = req.params;
+    const topics = await Topic.find({ subject_id: subject_id });
     res.json({ success: true, topics });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -25,7 +25,20 @@ export const createSession = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+export const getSessionsByTopic = async (req, res) => {
+  try {
+    const { topicId } = req.params;
 
+    const sessions = await Session.find({
+      topic_id: topicId,
+      user_id: req.user.id,
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, sessions });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 // Get all sessions of the user
 export const getUserSessions = async (req, res) => {
   try {
