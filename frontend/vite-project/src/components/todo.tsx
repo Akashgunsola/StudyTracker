@@ -10,8 +10,9 @@ interface todoitemprop{
 const Todoitem : React.FC<todoitemprop> = (props) =>{
     return (
         <li>
-        {props.task}
-        {props.title}
+        <h2>this is my title </h2>{props.title}
+        <h2>this is my task</h2>{props.task}
+        
         
         </li>
         

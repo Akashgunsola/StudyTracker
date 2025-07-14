@@ -8,8 +8,8 @@ const App : React.FC = () => {
  <div>
   <h1>My TODO LIST</h1>
   <ol>
-<Todoitem title = "Do React" task =""/>
-<Todoitem title = "" task= "Done"/>
+<Todoitem title = "Do react" task ="DONE"/>
+<Todoitem title = "SLEEP" task= "Done"/>
  </ol>
   </div>
 )
