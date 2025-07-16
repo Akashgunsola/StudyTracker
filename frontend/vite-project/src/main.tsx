@@ -11,6 +11,8 @@ import Registeruser from "./components/registeruser"
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import Dashboard from "./components/dashboard";
+import Profile from "./components/profile";
+
 interface ProtectedRouteProps {
   children: ReactNode;
 }
@@ -28,6 +30,7 @@ root.render(
    
    <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify/:token" element={<VerifyEmail />} />
         <Route path="/register" element={<Registeruser />}/>
@@ -35,6 +38,7 @@ root.render(
         <Route path="/topics/:subjectId" element={<Topics />} />
         <Route path="/sessions/:topicId" element={<Sessions />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<Profile />} />
 
 
 

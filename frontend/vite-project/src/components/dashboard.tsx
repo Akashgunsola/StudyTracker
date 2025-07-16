@@ -1,26 +1,34 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getMe, getStreak, getAllSessions } from "../fetch-api/dashboard";
+import { Menu } from "@headlessui/react";
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
-  const [streak, setStreak] = useState<any>(null);
+  const [streak, setStreak] = useState<{ count: number; lastSession: string | null }>({ count: 0, lastSession: null });
   const [sessions, setSessions] = useState<any[]>([]);
   const [error, setError] = useState("");
+
+  const [lastSubjectId, setLastSubjectId] = useState<string | null>(null);
+  const [lastTopicId, setLastTopicId] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log("Fetching /me...");
         const userData = await getMe();
-        console.log("Fetching /streak...");
         const streakData = await getStreak();
-        console.log("Fetching /sessions...");
         const sessionData = await getAllSessions();
-        console.log("Fetched data:", { userData, streakData, sessionData });
 
         setUser(userData.user);
-        setStreak(streakData.streak);
-        setSessions(sessionData.sessions);
+        setStreak(streakData || { count: 0, lastSession: null });
+        setSessions(sessionData.sessions || []);
+
+        if (sessionData.sessions.length > 0) {
+          const last = sessionData.sessions[sessionData.sessions.length - 1];
+          setLastSubjectId(last.subject_id);
+          setLastTopicId(last.topic_id);
+        }
       } catch (err: any) {
         setError(err.message);
       }
@@ -30,32 +38,138 @@ const Dashboard: React.FC = () => {
   }, []);
 
   const today = new Date().toDateString();
-  const todaySessions = sessions.filter(
-    (s) => new Date(s.createdAt).toDateString() === today
-  );
+  const todaySessions = sessions.filter((s) => new Date(s.createdAt).toDateString() === today);
   const totalTodayMinutes = todaySessions.reduce((sum, s) => sum + s.duration, 0);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">📊 Dashboard</h1>
+    <div className="p-6 sm:p-10 max-w-6xl mx-auto">
+      <div className="right-10">
+{user && (
+  <Menu as="div" className="relative inline-block text-left">
+    <Menu.Button
+      className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg sm:text-xl font-bold cursor-pointer hover:bg-blue-600 shadow-lg transition"
+      title="Account"
+    >
+      {user.name?.[0]?.toUpperCase() || "U"}
+    </Menu.Button>
+
+    <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right bg-white border border-gray-200 rounded-lg shadow-lg focus:outline-none z-50">
+      <div className="px-4 py-2 text-sm text-gray-700 border-b">
+        Signed in as <br />
+        <strong>{user.email}</strong>
+      </div>
+      <Menu.Item>
+        {({ active }) => (
+          <button
+            onClick={() => navigate("/profile")}
+            className={`${
+              active ? "bg-gray-100" : ""
+            } w-full text-left px-4 py-2 text-sm text-gray-700`}
+          >
+            👤 View Profile
+          </button>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <button
+            onClick={() => alert("Edit info (not implemented yet)")}
+            className={`${
+              active ? "bg-gray-100" : ""
+            } w-full text-left px-4 py-2 text-sm text-gray-700`}
+          >
+            ✏️ Edit Info
+          </button>
+        )}
+      </Menu.Item>
+      <Menu.Item>
+        {({ active }) => (
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              navigate("/login");
+            }}
+            className={`${
+              active ? "bg-gray-100" : ""
+            } w-full text-left px-4 py-2 text-sm text-red-600`}
+          >
+            🚪 Logout
+          </button>
+        )}
+      </Menu.Item>
+    </Menu.Items>
+  </Menu>
+)}
+</div>
 
       {error && <p className="text-red-500">{error}</p>}
 
-      {user && (
-        <div className="mb-4">
-          <p>👋 Welcome, <strong>{user.name || user.email}</strong></p>
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+        <DashboardCard
+          icon="🔥"
+          bgColor="bg-gradient-to-tr from-orange-400 to-orange-600"
+          title="Current Streak"
+          value={`${streak.count} day${streak.count !== 1 ? "s" : ""}`}
+          description={streak.lastSession ? `Last session: ${new Date(streak.lastSession).toLocaleString()}` : "No sessions yet"}
+          onClick={() => navigate("/streaks")}
+        />
 
-      <div className="space-y-2">
-        <p>🔥 Streak: <strong>{streak?.current_streak || 0 }</strong> days</p>
-        <p>🕒 Total sessions: <strong>{sessions.length}</strong></p>
-        <p>📅 Sessions today: <strong>{todaySessions.length}</strong></p>
-        <p>⏱️ Minutes studied today: <strong>{totalTodayMinutes}</strong> mins</p>
+        <DashboardCard
+          icon="📚"
+          bgColor="bg-gradient-to-tr from-blue-400 to-blue-600"
+          title="Subjects"
+          value="Manage"
+          description="Add, edit or delete your subjects"
+          onClick={() => navigate("/subjects")}
+        />
+
+        <DashboardCard
+          icon="📂"
+          bgColor="bg-gradient-to-tr from-purple-400 to-purple-600"
+          title="Topics"
+          value="Explore"
+          description={lastSubjectId ? "View topics for your last subject" : "Select a subject to get started"}
+          onClick={() => lastSubjectId ? navigate(`/topics/${lastSubjectId}`) : navigate("/subjects")}
+        />
+
+        <DashboardCard
+          icon="🕒"
+          bgColor="bg-gradient-to-tr from-green-400 to-green-600"
+          title="Today's Study"
+          value={`${totalTodayMinutes} min`}
+          description={`${todaySessions.length} session${todaySessions.length !== 1 ? "s" : ""}`}
+          onClick={() =>
+            lastTopicId && lastSubjectId
+              ? navigate(`/sessions/${lastTopicId}?subjectId=${lastSubjectId}`)
+              : navigate("/subjects")
+          }
+        />
       </div>
     </div>
   );
 };
 
-export default Dashboard;
+type CardProps = {
+  icon: string;
+  title: string;
+  value: string;
+  description: string;
+  onClick: () => void;
+  bgColor: string;
+};
 
+const DashboardCard: React.FC<CardProps> = ({ icon, title, value, description, onClick, bgColor }) => (
+  <div
+    onClick={onClick}
+    className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 cursor-pointer p-6 border border-gray-100"
+  >
+    <div className={`w-12 h-12 flex items-center justify-center rounded-full text-white text-xl font-bold shadow-md ${bgColor}`}>
+      {icon}
+    </div>
+    <h2 className="text-lg font-semibold mt-4 text-gray-800 group-hover:text-gray-900">{title}</h2>
+    <p className="text-3xl font-extrabold mt-1 text-gray-700">{value}</p>
+    <p className="text-sm text-gray-500 mt-1">{description}</p>
+  </div>
+);
+
+export default Dashboard;
