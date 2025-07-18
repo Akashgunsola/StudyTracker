@@ -115,3 +115,4 @@ const deleteSubject = async (req, res) => {
 
 
 export {createSubject, updateSubject, getallSubject, getSubjectById, deleteSubject};
+

@@ -12,6 +12,8 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 import Dashboard from "./components/dashboard";
 import Profile from "./components/profile";
+import MainLayout from "./components/mainbar";
+import AllSubjectsWithSessions from "./components/allsubjectsdata"
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -30,6 +32,7 @@ root.render(
    
    <BrowserRouter>
       <Routes>
+        <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}/>
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify/:token" element={<VerifyEmail />} />
@@ -39,7 +42,7 @@ root.render(
         <Route path="/sessions/:topicId" element={<Sessions />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
-
+        <Route path="/topics" element={<AllSubjectsWithSessions />} /> 
 
 
 

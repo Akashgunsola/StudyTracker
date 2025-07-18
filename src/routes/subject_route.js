@@ -21,3 +21,4 @@ router.delete("/:id", isLoggedIn, deleteSubject);
 
 
 export default router;
+
