@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { getSubjects, createSubject, deleteSubject } from "../fetch-api/subjectsapi";
-import { getMe } from "../fetch-api/dashboard"; // Import to get logged-in user
+import { getSubjects, deleteSubject } from "../fetch-api/subjectsapi"; // Removed createSubject as per logic
+import { getMe } from "../fetch-api/dashboard";
 import { Menu } from "@headlessui/react";
 
 type Subject = {
@@ -9,10 +9,9 @@ type Subject = {
   title: string;
 };
 
-const Subjects: React.FC = () => { // Renamed from AllSubjectsWithSessions to Subjects
+const : React.FC = () => { // Corrected component name to Sessionfrontpage
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [newSubject, setNewSubject] = useState("");
   const [error, setError] = useState("");
   const [user, setUser] = useState<any>(null);
   const [lastTopicId, setLastTopicId] = useState<string | null>(null);
@@ -41,20 +40,7 @@ const Subjects: React.FC = () => { // Renamed from AllSubjectsWithSessions to Su
     loadSubjects();
   }, []);
 
-  const handleAdd = async () => {
-    if (!newSubject.trim()) {
-      setError("Subject title cannot be empty.");
-      return;
-    }
-    try {
-      await createSubject(newSubject, "#ffa500"); // Assuming color is fixed or handled elsewhere
-      setNewSubject("");
-      setError(""); // Clear any previous errors
-      loadSubjects();
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
+  // Removed handleAdd as the form to add subjects is removed from this page.
 
   const handleDelete = async (id: string) => {
     try {
@@ -71,17 +57,32 @@ const Subjects: React.FC = () => { // Renamed from AllSubjectsWithSessions to Su
       <aside className="w-64 bg-white shadow-lg p-6 space-y-6">
         <h1 className="text-2xl font-bold text-blue-600 mb-6">📘 Study Tracker</h1>
         <nav className="space-y-4">
-            <button onClick={() => navigate("/dashboard")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📈 Dashboard</button>
-          <button onClick={() => navigate("/streaks")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">🔥 Streaks</button>
-          <button onClick={() => navigate("/subjects")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📚 Subjects</button>
-          <button onClick={() => navigate("/topics")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📂 Topics</button>
+          <button onClick={() => navigate("/dashboard")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200">📈 Dashboard</button>
+          <button
+            onClick={() => navigate("/streaks")}
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200"
+          >
+            🔥 Streaks
+          </button>
+          <button
+            onClick={() => navigate("/subjects")}
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200"
+          >
+            📚 Subjects
+          </button>
+          <button
+            onClick={() => navigate("/topics")}
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200"
+          >
+            📂 Topics
+          </button>
           <button
             onClick={() =>
               lastTopicId && lastSubjectId
                 ? navigate(`/sessions/${lastTopicId}?subjectId=${lastSubjectId}`)
                 : navigate("/sessions")
             }
-            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200"
           >
             🕒 Sessions
           </button>
@@ -139,11 +140,10 @@ const Subjects: React.FC = () => { // Renamed from AllSubjectsWithSessions to Su
       {/* Main Content Area */}
       <div className="flex-1 p-8 md:p-12">
         <h2 className="text-3xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-300 pb-2">
-          Select a Subject to Add New Topics or View Existing Ones
+          Select a subject to add a session to it
         </h2>
 
-        {/* Add Subject Form */}
-      
+        {/* Removed 'Add Subject Form' section */}
 
         {/* Error Display */}
         {error && (
@@ -155,16 +155,17 @@ const Subjects: React.FC = () => { // Renamed from AllSubjectsWithSessions to Su
         {/* Subjects List */}
         {subjects.length === 0 ? (
           <p className="text-gray-600 text-lg text-center py-10 bg-white rounded-lg shadow-md">
-            No subjects found. Add your first subject above!
+            No subjects found. Please add subjects from the 'Subjects' page first.
           </p>
         ) : (
           <ul className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {subjects.map((subj) => (
               <li key={subj._id} className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between">
-                <Link to={`/topics/${subj._id}`} className="text-lg font-bold text-blue-700 hover:text-blue-900 transition-colors duration-200 mb-2">
+                {/* Link now directs to /sessionstopic/:subjectId */}
+                <Link to={`/sessionstopic/${subj._id}`} className="text-lg font-bold text-blue-700 hover:text-blue-900 transition-colors duration-200 mb-2">
                   {subj.title}
                 </Link>
-                <div className="mt-auto"> {/* Pushes the button to the bottom */}
+                <div className="mt-auto">
                   <button
                     onClick={() => handleDelete(subj._id)}
                     className="mt-3 text-red-500 hover:text-red-700 text-sm font-medium transition-colors duration-200"

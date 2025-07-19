@@ -14,6 +14,8 @@ import Dashboard from "./components/dashboard";
 import Profile from "./components/profile";
 import MainLayout from "./components/mainbar";
 import AllSubjectsWithSessions from "./components/allsubjectsdata"
+import Sessionfrontpage from "./components/sessionpagefront"
+import Sessiontopicpage from "./components/sessiontopicpage"
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -43,6 +45,8 @@ root.render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/topics" element={<AllSubjectsWithSessions />} /> 
+        <Route path="/sessions" element={<Sessionfrontpage />} />
+        <Route path="/sessionstopic/:subjectId" element={<Sessiontopicpage />} />
 
 
 

@@ -17,6 +17,8 @@ const Sessions: React.FC = () => {
   const subjectId = query.get("subjectId");
   const navigate = useNavigate();
 
+  const [lastSubjectId, setLastSubjectId] = useState<string | null>(null);
+  const [lastTopicId, setLastTopicId] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -104,7 +106,16 @@ const Sessions: React.FC = () => {
           <button onClick={() => navigate("/streaks")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">🔥 Streaks</button>
           <button onClick={() => navigate("/subjects")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📚 Subjects</button>
           <button onClick={() => navigate("/topics")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📂 Topics</button>
-          <button onClick={() => navigate("/sessions")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">🕒 Sessions</button>
+           <button
+            onClick={() =>
+              lastTopicId && lastSubjectId
+                ? navigate(`/sessions/${lastTopicId}?subjectId=${lastSubjectId}`)
+                : navigate("/sessions")
+            }
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
+          >
+            🕒 Sessions
+          </button>
         </nav>
 
         {/* User */}

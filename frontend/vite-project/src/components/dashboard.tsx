@@ -76,7 +76,7 @@ const Dashboard: React.FC = () => {
             onClick={() =>
               lastTopicId && lastSubjectId
                 ? navigate(`/sessions/${lastTopicId}?subjectId=${lastSubjectId}`)
-                : navigate("/subjects")
+                : navigate("/sessions")
             }
             className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
           >
@@ -152,21 +152,21 @@ const Dashboard: React.FC = () => {
             description={
               streak.lastSession
                 ? `Last session: ${new Date(streak.lastSession).toLocaleString()}`
-                : "No sessions yet"
+                : "Adding session everyday increases your streak"
             }
             onClick={() => navigate("/streaks")}
           />
 
-          <DashboardCard
+          {/* <DashboardCard
             icon="📚"
             bgColor="bg-gradient-to-tr from-blue-400 to-blue-600"
             title="Subjects"
             value="Manage"
             description="Add, edit or delete your subjects"
             onClick={() => navigate("/subjects")}
-          />
+          /> */}
 
-          <DashboardCard
+          {/* <DashboardCard
             icon="📂"
             bgColor="bg-gradient-to-tr from-purple-400 to-purple-600"
             title="Topics"
@@ -177,7 +177,7 @@ const Dashboard: React.FC = () => {
             onClick={() =>
               lastSubjectId ? navigate(`/topics/${lastSubjectId}`) : navigate("/subjects")
             }
-          />
+          /> */}
 
           <DashboardCard
             icon="🕒"

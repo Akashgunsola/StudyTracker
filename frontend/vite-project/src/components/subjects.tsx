@@ -90,7 +90,7 @@ const Subjects: React.FC = () => {
             onClick={() =>
               lastTopicId && lastSubjectId
                 ? navigate(`/sessions/${lastTopicId}?subjectId=${lastSubjectId}`)
-                : navigate("/subjects")
+                : navigate("/sessions")
             }
             className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
           >

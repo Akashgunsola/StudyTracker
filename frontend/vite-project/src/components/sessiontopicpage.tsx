@@ -88,13 +88,13 @@ const Topics: React.FC = () => {
           <button onClick={() => navigate("/streaks")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">🔥 Streaks</button>
           <button onClick={() => navigate("/subjects")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📚 Subjects</button>
           <button onClick={() => navigate("/topics")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📂 Topics</button>
-        <button
+          <button
             onClick={() =>
               lastTopicId && lastSubjectId
                 ? navigate(`/sessions/${lastTopicId}?subjectId=${lastSubjectId}`)
-                : navigate("/topics")
+                : navigate("/sessions")
             }
-            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200"
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
           >
             🕒 Sessions
           </button>
@@ -138,31 +138,9 @@ const Topics: React.FC = () => {
 
       {/* Main content */}
       <main className="flex-1 p-6 sm:p-10">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">📂 Topics for this Subject</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-800"> Start a Session for any Subject</h2>
 
-        <div className="mb-6 bg-white rounded-xl p-6 shadow-md space-y-4 border border-gray-200">
-          <input
-            type="text"
-            placeholder="Topic name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md"
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-2 border rounded-md"
-          />
-          <button
-            onClick={handleAddTopic}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-          >
-            ➕ Add Topic
-          </button>
-          {error && <p className="text-red-500">{error}</p>}
-        </div>
+        
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {topics.map((t) => (
