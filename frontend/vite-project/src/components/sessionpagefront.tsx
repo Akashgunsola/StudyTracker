@@ -9,7 +9,7 @@ type Subject = {
   title: string;
 };
 
-const : React.FC = () => { // Corrected component name to Sessionfrontpage
+const Subjects: React.FC = () => { // Corrected component name to Sessionfrontpage
   const navigate = useNavigate();
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [error, setError] = useState("");
