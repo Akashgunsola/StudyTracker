@@ -17,6 +17,13 @@ const Subjects: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [lastTopicId, setLastTopicId] = useState<string | null>(null);
   const [lastSubjectId, setLastSubjectId] = useState<string | null>(null);
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    return false;
+  });
 
   const loadSubjects = async () => {
     try {
@@ -41,6 +48,16 @@ const Subjects: React.FC = () => {
     loadSubjects();
   }, []);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
   const handleAdd = async () => {
     if (!newSubject.trim()) return;
     try {
@@ -62,10 +79,16 @@ const Subjects: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-6 space-y-6">
+      <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg p-6 space-y-6 text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-blue-600 mb-6">📘 Study Tracker</h1>
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className="mb-4 p-2 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 w-full"
+        >
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
         <nav className="space-y-4">
           <button onClick={() => navigate("/dashboard")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📈 Dashboard</button>
           <button
@@ -148,7 +171,7 @@ const Subjects: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 p-8">
+      <div className="flex-1 p-8 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
         <h2 className="text-xl font-semibold mb-4">Your Subjects</h2>
 
         <div className="mb-4 flex gap-2">
@@ -156,22 +179,20 @@ const Subjects: React.FC = () => {
             placeholder="New subject"
             value={newSubject}
             onChange={(e) => setNewSubject(e.target.value)}
-            className="border px-4 py-2 rounded w-64"
+            className="border px-4 py-2 rounded w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
           />
-          <button onClick={handleAdd} className="bg-blue-500 text-white px-4 py-2 rounded">
-            Add
-          </button>
+          <button onClick={handleAdd} className="bg-blue-500 text-white px-4 py-2 rounded">Add</button>
         </div>
 
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-red-500 dark:text-red-400">{error}</p>}
 
         <ul className="space-y-2">
           {subjects.map((subj) => (
-            <li key={subj._id} className="flex justify-between items-center bg-white p-4 rounded shadow">
-              <Link to={`/topics/${subj._id}`} className="text-blue-600 hover:underline">
+            <li key={subj._id} className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded shadow border border-gray-100 dark:border-gray-700">
+              <Link to={`/topics/${subj._id}`} className="text-blue-600 hover:underline dark:text-blue-400 dark:hover:text-blue-300">
                 {subj.title}
               </Link>
-              <button onClick={() => handleDelete(subj._id)} className="text-red-500 hover:text-red-700">
+              <button onClick={() => handleDelete(subj._id)} className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
                 ❌
               </button>
             </li>

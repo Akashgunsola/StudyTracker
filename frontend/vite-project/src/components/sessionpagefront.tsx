@@ -17,6 +17,14 @@ const Subjects: React.FC = () => { // Corrected component name to Sessionfrontpa
   const [lastTopicId, setLastTopicId] = useState<string | null>(null);
   const [lastSubjectId, setLastSubjectId] = useState<string | null>(null);
 
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    return false;
+  });
+
   const loadSubjects = async () => {
     try {
       const data = await getSubjects();
@@ -40,6 +48,16 @@ const Subjects: React.FC = () => { // Corrected component name to Sessionfrontpa
     loadSubjects();
   }, []);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
   // Removed handleAdd as the form to add subjects is removed from this page.
 
   const handleDelete = async (id: string) => {
@@ -52,10 +70,16 @@ const Subjects: React.FC = () => { // Corrected component name to Sessionfrontpa
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100 font-sans">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900 font-sans">
       {/* Sidebar - Retained existing structure for consistency */}
-      <aside className="w-64 bg-white shadow-lg p-6 space-y-6">
+      <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg p-6 space-y-6 text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-blue-600 mb-6">📘 Study Tracker</h1>
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className="mb-4 p-2 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 w-full"
+        >
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
         <nav className="space-y-4">
           <button onClick={() => navigate("/dashboard")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200">📈 Dashboard</button>
           <button
@@ -138,8 +162,8 @@ const Subjects: React.FC = () => { // Corrected component name to Sessionfrontpa
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 p-8 md:p-12">
-        <h2 className="text-3xl font-extrabold text-gray-800 mb-6 border-b-2 border-blue-300 pb-2">
+      <div className="flex-1 p-8 md:p-12 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+        <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 mb-6 border-b-2 border-blue-300 pb-2">
           Select a subject to add a session to it
         </h2>
 
@@ -147,28 +171,27 @@ const Subjects: React.FC = () => { // Corrected component name to Sessionfrontpa
 
         {/* Error Display */}
         {error && (
-          <p className="bg-red-100 text-red-700 p-3 rounded-md mb-6 border border-red-300 animate-fade-in">
+          <p className="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 p-3 rounded-md mb-6 border border-red-300 dark:border-red-700 animate-fade-in">
             Error: {error}
           </p>
         )}
 
         {/* Subjects List */}
         {subjects.length === 0 ? (
-          <p className="text-gray-600 text-lg text-center py-10 bg-white rounded-lg shadow-md">
+          <p className="text-gray-600 dark:text-gray-300 text-lg text-center py-10 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             No subjects found. Please add subjects from the 'Subjects' page first.
           </p>
         ) : (
           <ul className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {subjects.map((subj) => (
-              <li key={subj._id} className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between">
-                {/* Link now directs to /sessionstopic/:subjectId */}
-                <Link to={`/sessionstopic/${subj._id}`} className="text-lg font-bold text-blue-700 hover:text-blue-900 transition-colors duration-200 mb-2">
+              <li key={subj._id} className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between border border-gray-100 dark:border-gray-700">
+                <Link to={`/sessionstopic/${subj._id}`} className="text-lg font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 transition-colors duration-200 mb-2">
                   {subj.title}
                 </Link>
                 <div className="mt-auto">
                   <button
                     onClick={() => handleDelete(subj._id)}
-                    className="mt-3 text-red-500 hover:text-red-700 text-sm font-medium transition-colors duration-200"
+                    className="mt-3 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium transition-colors duration-200"
                     aria-label={`Delete subject ${subj.title}`}
                   >
                     Delete Subject

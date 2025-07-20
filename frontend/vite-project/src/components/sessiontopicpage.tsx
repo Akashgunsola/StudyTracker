@@ -23,6 +23,24 @@ const Topics: React.FC = () => {
   const [lastSubjectId, setLastSubjectId] = useState<string | null>(null);
   const [lastTopicId, setLastTopicId] = useState<string | null>(null);
 
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
   useEffect(() => {
     const loadUserAndSessions = async () => {
       try {
@@ -78,10 +96,16 @@ const Topics: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-6 space-y-6">
+      <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg p-6 space-y-6 text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-blue-600 mb-6">📘 Study Tracker</h1>
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className="mb-4 p-2 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 w-full"
+        >
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
         <nav className="space-y-4">
 
           <button onClick={() => navigate("/dashboard")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📈 Dashboard</button>
@@ -137,19 +161,19 @@ const Topics: React.FC = () => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-6 sm:p-10">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800"> Start a Session for any Subject</h2>
+      <main className="flex-1 p-6 sm:p-10 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100"> Start a Session for any Subject</h2>
 
         
 
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {topics.map((t) => (
-            <li key={t._id} className="bg-white border rounded-xl p-4 shadow hover:shadow-lg transition">
-              <h3 className="text-lg font-semibold text-blue-700">{t.name}</h3>
-              <p className="text-gray-600">{t.description}</p>
+            <li key={t._id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow hover:shadow-lg transition">
+              <h3 className="text-lg font-semibold text-blue-700 dark:text-blue-400">{t.name}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{t.description}</p>
               <Link
                 to={`/sessions/${t._id}?subjectId=${subjectId}`}
-                className="mt-2 inline-block text-blue-500 hover:underline"
+                className="mt-2 inline-block text-blue-500 dark:text-blue-300 hover:underline"
               >
                 🕒 Start Session
               </Link>

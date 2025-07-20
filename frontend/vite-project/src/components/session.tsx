@@ -28,6 +28,24 @@ const Sessions: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // Dark mode state
+  const [darkMode, setDarkMode] = React.useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') === 'dark';
+    }
+    return false;
+  });
+
+  React.useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
   // Fetch user + sessions
   useEffect(() => {
     const loadData = async () => {
@@ -97,10 +115,16 @@ const Sessions: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-lg p-6 space-y-6">
+      <aside className="w-64 bg-white dark:bg-gray-800 shadow-lg p-6 space-y-6 text-gray-900 dark:text-gray-100 border-r border-gray-200 dark:border-gray-700">
         <h1 className="text-2xl font-bold text-blue-600 mb-6">📘 Study Tracker</h1>
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className="mb-4 p-2 rounded bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 w-full"
+        >
+          {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
+        </button>
         <nav className="space-y-4">
           <button onClick={() => navigate("/dashboard")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📈 Dashboard</button>
           <button onClick={() => navigate("/streaks")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">🔥 Streaks</button>
@@ -159,10 +183,10 @@ const Sessions: React.FC = () => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 p-6 sm:p-10">
+      <main className="flex-1 p-6 sm:p-10 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
         <h2 className="text-2xl font-semibold text-blue-600 mb-4">🕒 Track Study Sessions</h2>
-        <p className="text-gray-600 mb-6">Use the timer or enter a duration manually to log your session.</p>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <p className="text-gray-600 dark:text-gray-300 mb-6">Use the timer or enter a duration manually to log your session.</p>
+        {error && <p className="text-red-500 dark:text-red-400 mb-4">{error}</p>}
 
         {/* Timer Controls */}
         <div className="mb-6 space-y-3">
@@ -185,7 +209,7 @@ const Sessions: React.FC = () => {
             </button>
           )}
           {elapsed > 0 && (
-            <p className="text-gray-700">⏱️ Elapsed: {Math.floor(elapsed / 60)} min {elapsed % 60} sec</p>
+            <p className="text-gray-700 dark:text-gray-200">⏱️ Elapsed: {Math.floor(elapsed / 60)} min {elapsed % 60} sec</p>
           )}
         </div>
 
@@ -195,7 +219,7 @@ const Sessions: React.FC = () => {
             type="number"
             value={duration}
             onChange={(e) => setDuration(Number(e.target.value))}
-            className="border px-3 py-2 rounded w-32"
+            className="border px-3 py-2 rounded w-32 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-700"
             placeholder="Duration (mins)"
           />
           <button onClick={() => handleAddSession()} disabled={loading} className={`${loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"} text-white px-4 py-2 rounded`}>
@@ -204,22 +228,21 @@ const Sessions: React.FC = () => {
         </div>
 
         {/* Session List */}
-        <div>
-          <h3 className="text-lg font-medium text-gray-700 mb-2">Previous Sessions:</h3>
-          <ul className="space-y-3">
-            {sessions.map((s) => (
-              <li key={s._id} className="flex justify-between items-center bg-gray-50 p-4 rounded shadow-sm">
-                <div>
-                  <p className="text-gray-800">⏱️ {s.duration} mins | 📅 {new Date(s.createdAt).toLocaleString()}</p>
-                </div>
-                <button onClick={() => handleDelete(s._id)} className="text-red-500 hover:text-red-700">❌</button>
-              </li>
-            ))}
-            {sessions.length === 0 && (
-              <p className="text-gray-500">No sessions logged yet.</p>
-            )}
-          </ul>
-        </div>
+        <ul className="space-y-2">
+          {sessions.map((session) => (
+            <li key={session._id} className="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded shadow border border-gray-100 dark:border-gray-700">
+              <span className="text-gray-900 dark:text-gray-100">{session.duration} min</span>
+              <span className="text-gray-500 dark:text-gray-300">{new Date(session.createdAt).toLocaleString()}</span>
+              <button
+                onClick={() => handleDelete(session._id)}
+                className="ml-4 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-lg cursor-pointer"
+                title="Delete session"
+              >
+                ❌
+              </button>
+            </li>
+          ))}
+        </ul>
       </main>
     </div>
   );

@@ -12,7 +12,6 @@ export const getStreak = async () => {
   const res = await fetch(`${API}/streaks`, {
     credentials: "include",
   });
-  console.log("Streak response:", res);
   if (!res.ok) throw new Error("Failed to fetch streak");
   return await res.json();
 };
