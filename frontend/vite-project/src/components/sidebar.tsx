@@ -41,6 +41,7 @@ const Sidebar = () => {
       <nav className="flex flex-col gap-4">
         <Link to="/dashboard" className="hover:bg-gray-700 dark:hover:bg-gray-600 rounded p-2">Dashboard</Link>
         <Link to="/subjects" className="hover:bg-gray-700 dark:hover:bg-gray-600 rounded p-2">Subjects</Link>
+        <Link to="/ai" className="hover:bg-gray-700 dark:hover:bg-gray-600 rounded p-2">AI Assistant</Link>
        
         <Link to="/profile" className="hover:bg-gray-700 dark:hover:bg-gray-600 rounded p-2">Profile</Link>
         <button

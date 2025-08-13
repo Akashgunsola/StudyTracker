@@ -104,6 +104,12 @@ const Subjects: React.FC = () => {
             📚 Subjects
           </button>
           <button
+            onClick={() => navigate("/ai")}
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
+          >
+            🤖 AI Assistant
+          </button>
+          <button
             onClick={() => navigate("/topics")}
             className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
           >

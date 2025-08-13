@@ -16,6 +16,8 @@ import MainLayout from "./components/mainbar";
 import AllSubjectsWithSessions from "./components/allsubjectsdata"
 import Sessionfrontpage from "./components/sessionpagefront"
 import Sessiontopicpage from "./components/sessiontopicpage"
+import ResetPasswordPage from "./components/ResetPasswordPage";
+import AIChat from "./components/AIChat";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -47,6 +49,8 @@ root.render(
         <Route path="/topics" element={<AllSubjectsWithSessions />} /> 
         <Route path="/sessions" element={<Sessionfrontpage />} />
         <Route path="/sessionstopic/:subjectId" element={<Sessiontopicpage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+        <Route path="/ai" element={<AIChat />} />
 
 
 

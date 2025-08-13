@@ -95,6 +95,12 @@ const Subjects: React.FC = () => { // Corrected component name to Sessionfrontpa
             📚 Subjects
           </button>
           <button
+            onClick={() => navigate("/ai")}
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200"
+          >
+            🤖 AI Assistant
+          </button>
+          <button
             onClick={() => navigate("/topics")}
             className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100 transition-colors duration-200"
           >

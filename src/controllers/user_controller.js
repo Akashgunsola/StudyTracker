@@ -240,28 +240,117 @@ try {
 }
 
 const forgotpassword = async (req, res) => {
-    
-}
-
-const resetpassword = async(req, res) =>{
-    const {email} = req.body;
-    if(!email){
-        res.status(400).json({
-            message: "Enter a valid email",
-        });
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ message: "Email is required" });
     }
     try {
-    const user = await User.findOne({email});
-    
-
-
-} catch (error) {
-        
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (!user.isVerified) {
+            return res.status(403).json({ message: "Please verify your email first" });
+        }
+        // Generate reset token and expiry
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        const resetTokenExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordTokenExpiry = resetTokenExpiry;
+        await user.save();
+        // Send reset email
+        const mailoptions = {
+            from: 'studytracker@ethereal.email',
+            to: user.email,
+            subject: "Password Reset Request",
+            text: `You requested a password reset. Click or paste this link to reset your password: http://localhost:5173/reset-password/${resetToken}`,
+        };
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAILTRAP_HOST,
+            port: process.env.MAILTRAP_PORT,
+            secure: false,
+            auth: {
+                user: process.env.MAILTRAP_USER,
+                pass: process.env.MAILTRAP_PASS,
+            },
+        });
+        await transporter.sendMail(mailoptions);
+        res.status(200).json({ message: "Password reset email sent" });
+    } catch (error) {
+        console.error("Forgot password error:", error);
+        res.status(500).json({ message: "Server error" });
     }
-}
+};
+
+const resetpassword = async (req, res) => {
+    const { token, password } = req.body;
+    if (!token || !password) {
+        return res.status(400).json({ message: "Token and new password are required" });
+    }
+    if (password.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+    try {
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordTokenExpiry: { $gt: Date.now() },
+        });
+        if (!user) {
+            return res.status(400).json({ message: "Invalid or expired token" });
+        }
+        // Hash new password
+        user.password = password; // Let pre-save hook hash it
+        user.resetPasswordToken = undefined;
+        user.resetPasswordTokenExpiry = undefined;
+        await user.save();
+        res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+        console.error("Reset password error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 
 const resendVerficationemail = async (req, res) => {
-    
-}
+    const { email } = req.body;
+    if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+    }
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (user.isVerified) {
+            return res.status(400).json({ message: "User is already verified" });
+        }
+        // Generate new verification token and expiry
+        const verificationToken = crypto.randomBytes(32).toString("hex");
+        const verificationTokenExpiry = Date.now() + 60 * 60 * 1000; // 1 hour
+        user.verificationToken = verificationToken;
+        user.verificationTokenExpiry = verificationTokenExpiry;
+        await user.save();
+        // Send verification email
+        const mailoptions = {
+            from: 'studytracker@ethereal.email',
+            to: user.email,
+            subject: "Resend: Please Verify your email",
+            text: `Please click on this link or paste it in your browser to verify your email: http://localhost:5173/verify/${verificationToken}`,
+        };
+        const transporter = nodemailer.createTransport({
+            host: process.env.MAILTRAP_HOST,
+            port: process.env.MAILTRAP_PORT,
+            secure: false,
+            auth: {
+                user: process.env.MAILTRAP_USER,
+                pass: process.env.MAILTRAP_PASS,
+            },
+        });
+        await transporter.sendMail(mailoptions);
+        res.status(200).json({ message: "Verification email resent" });
+    } catch (error) {
+        console.error("Resend verification email error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
 
-export { register, verifyUser, login, getme, logout};
+export { register, verifyUser, login, getme, logout, forgotpassword, resetpassword, resendVerficationemail };

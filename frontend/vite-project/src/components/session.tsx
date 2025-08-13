@@ -130,6 +130,7 @@ const Sessions: React.FC = () => {
           <button onClick={() => navigate("/streaks")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">🔥 Streaks</button>
           <button onClick={() => navigate("/subjects")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📚 Subjects</button>
           <button onClick={() => navigate("/topics")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">📂 Topics</button>
+          <button onClick={() => navigate("/ai")} className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100">🤖 AI Assistant</button>
            <button
             onClick={() =>
               lastTopicId && lastSubjectId

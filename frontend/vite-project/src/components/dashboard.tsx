@@ -103,6 +103,12 @@ const Dashboard: React.FC = () => {
             📂 Topics
           </button>
           <button
+            onClick={() => navigate("/ai")}
+            className="w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-blue-100"
+          >
+            🤖 AI Assistant
+          </button>
+          <button
             onClick={() =>
               lastTopicId && lastSubjectId
                 ? navigate(`/sessions/${lastTopicId}?subjectId=${lastSubjectId}`)
